@@ -263,6 +263,17 @@ Start-Sleep -Seconds 120
         if ($waiter) { $waiter.Dispose() }
     }
 
+    # Custom scripts are loaded by the remote access patch; without it they must be reported, not dropped silently.
+    $injectorType = $assembly.GetType('WandEnhancer.Core.Patching.Content.RemotePanelInjector', $true)
+    $injectorMessages = [Collections.Generic.List[string]]::new()
+    $injectorLogger = ({ param($message, $level) $injectorMessages.Add("$level $message") }.GetNewClosure()) -as $loggerType
+    $injector = [Activator]::CreateInstance($injectorType, $privateInstance, $null, [object[]]@([string](Join-Path $scratch 'injector-tree'), $injectorLogger), $null)
+    $noPatches = [Activator]::CreateInstance([Collections.Generic.HashSet``1].MakeGenericType($assembly.GetType('WandEnhancer.Models.EPatchType', $true)))
+    $customScripts = [Collections.Generic.List[string]]::new()
+    $customScripts.Add((Join-Path $scratch 'custom.js'))
+    $injectorType.GetMethod('Inject', $privateInstance).Invoke($injector, [object[]]@($noPatches, $customScripts)) | Out-Null
+    Assert-Equal (@($injectorMessages | Where-Object { $_ -like 'Warn*Custom scripts skipped*' }).Count) 1 'Custom scripts without remote access are reported'
+
 
     # A picked or dropped folder may be the version folder or the Squirrel root that holds it.
     $resolveInstall = $assembly.GetType('WandEnhancer.Utils.WeModInstalls', $true).GetMethod('ResolveInstall')
@@ -313,7 +324,7 @@ Start-Sleep -Seconds 120
     (Get-Item -LiteralPath (Join-Path $rankRoot 'app-12.9.0')).LastWriteTime = (Get-Date).AddHours(1)
     $latest = $resolveInstall.Invoke($null, [object[]]@([string]$rankRoot))
     Assert-Equal $latest.RootDirectory (Join-Path $rankRoot 'app-12.10.0') 'Latest install is the highest version, not the newest folder'
-    Write-Host 'Desktop regression checks passed (native sizes, backups, rollback, retry state, restore, watcher idle wait).'
+    Write-Host 'Desktop regression checks passed (native sizes, backups, rollback, retry state, restore, watcher idle wait, script warning).'
 }
 finally {
     Remove-Item -LiteralPath $scratch -Recurse -Force
