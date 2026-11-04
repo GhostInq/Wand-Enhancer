@@ -22,7 +22,7 @@ An open-source tool that extends the local client-side configuration of the Wand
 
 ## Network and privacy
 
-The patcher modifies files in the selected local Wand installation. By default it has no update check and no telemetry. Wand itself stays an online application. The optional remote web panel starts a LAN HTTP/WebSocket server and uses Wand API and CDN data, such as trainer translations and artwork.
+The patcher modifies files in the selected local Wand installation. By default it has no update check and no telemetry. Wand itself stays an online application. The remote web panel, on by default in the patch dialog, starts a LAN HTTP/WebSocket server and uses Wand API and CDN data, such as trainer translations and artwork.
 
 An opt-in build variant checks GitHub's latest public release when Wand starts. That request exposes your IP and User-Agent, sends no Wand or account data, and never downloads an update.
 
@@ -46,7 +46,7 @@ You do not need a pull request to this repository to build your fork. `master` i
 
 Two causes account for most reports. Check them before opening an issue.
 
-**Pro or mods stop working after a day or two.** Wand updates itself in the background, and the new version is not patched. Run Restore, then Patch again. To stop repeating this, enable **Auto-apply after updates** or **Disable updates** in the patch dialog. Auto-apply patches a new version once Wand is closed, or has sat in the tray for a minute with no game running from it, and then puts Wand back in the tray.
+**Pro or mods stop working after a day or two.** Wand updates itself in the background, and the new version is not patched. Run Restore, then Patch again. To stop repeating this, keep **Auto-apply after updates** (on by default) or enable **Disable updates** in the patch dialog. Auto-apply patches a new version once Wand is closed, or has sat in the tray for a minute with no game running from it, and then puts Wand back in the tray.
 
 **Wand does not open, or patched files disappear.** Patched Wand files are modified and unsigned, and the `WandEnhancer.exe` you build is unsigned and uncommon. Antivirus products and SmartScreen can flag both, even when the code was built from your own fork.
 

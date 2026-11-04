@@ -155,6 +155,12 @@ namespace WandEnhancer.View.Popups
 
         private void OnRemoteAccessToggled(object sender, RoutedEventArgs e)
         {
+            // The XAML default raises Checked mid-InitializeComponent, before the script texts below it exist.
+            if (!IsInitialized)
+            {
+                return;
+            }
+
             UpdateScriptsState();
         }
 

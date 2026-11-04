@@ -274,6 +274,13 @@ Start-Sleep -Seconds 120
     $injectorType.GetMethod('Inject', $privateInstance).Invoke($injector, [object[]]@($noPatches, $customScripts)) | Out-Null
     Assert-Equal (@($injectorMessages | Where-Object { $_ -like 'Warn*Custom scripts skipped*' }).Count) 1 'Custom scripts without remote access are reported'
 
+    # The checked-by-default boxes raise Checked while InitializeComponent is still building the dialog.
+    Assert-Equal ([Threading.Thread]::CurrentThread.GetApartmentState()) ([Threading.ApartmentState]::STA) 'WPF checks need an STA thread'
+    $applyType = [Action``1].MakeGenericType($assembly.GetType('WandEnhancer.Models.PatchConfig', $true))
+    $popup = [Activator]::CreateInstance($assembly.GetType('WandEnhancer.View.Popups.PatchVectorsPopup', $true), [object[]]@(({ param($selection) } -as $applyType), $null))
+    foreach ($box in 'ActivateProBox', 'RemoteWebPanelPreviewBox', 'AutoApplyBox') {
+        Assert-Equal $popup.FindName($box).IsChecked $true "$box is on by default"
+    }
 
     # A picked or dropped folder may be the version folder or the Squirrel root that holds it.
     $resolveInstall = $assembly.GetType('WandEnhancer.Utils.WeModInstalls', $true).GetMethod('ResolveInstall')
@@ -324,7 +331,7 @@ Start-Sleep -Seconds 120
     (Get-Item -LiteralPath (Join-Path $rankRoot 'app-12.9.0')).LastWriteTime = (Get-Date).AddHours(1)
     $latest = $resolveInstall.Invoke($null, [object[]]@([string]$rankRoot))
     Assert-Equal $latest.RootDirectory (Join-Path $rankRoot 'app-12.10.0') 'Latest install is the highest version, not the newest folder'
-    Write-Host 'Desktop regression checks passed (native sizes, backups, rollback, retry state, restore, watcher idle wait, script warning).'
+    Write-Host 'Desktop regression checks passed (native sizes, backups, rollback, retry state, restore, watcher idle wait, script warning, dialog defaults).'
 }
 finally {
     Remove-Item -LiteralPath $scratch -Recurse -Force

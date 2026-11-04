@@ -66,10 +66,11 @@
 
             <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Text="{DynamicResource pv_remote_web_panel_preview}" />
             <CheckBox Grid.Row="3" Grid.Column="1" x:Name="RemoteWebPanelPreviewBox" HorizontalAlignment="Right" VerticalAlignment="Center"
-                      Checked="OnRemoteAccessToggled" Unchecked="OnRemoteAccessToggled" />
+                      IsChecked="True" Checked="OnRemoteAccessToggled" Unchecked="OnRemoteAccessToggled" />
 
             <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Text="{DynamicResource pv_auto_apply}" />
-            <CheckBox Grid.Row="4" Grid.Column="1" x:Name="AutoApplyBox" HorizontalAlignment="Right" VerticalAlignment="Center" />
+            <CheckBox Grid.Row="4" Grid.Column="1" x:Name="AutoApplyBox" HorizontalAlignment="Right" VerticalAlignment="Center"
+                      IsChecked="True" />
 
             <Border Grid.Row="5" Grid.ColumnSpan="2" Margin="0 14 0 0" Padding="10"
                     BorderBrush="{DynamicResource Border}" BorderThickness="1" CornerRadius="4"
